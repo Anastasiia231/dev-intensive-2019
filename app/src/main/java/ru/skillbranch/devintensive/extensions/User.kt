@@ -19,4 +19,15 @@ fun User.toUserView():UserView{
         initials =initials ,
         avatar = avatar,
         status = status)
+
+  /*  val user = Builder()
+        .id("123")
+        .firstName("Тоталь")
+        .lastName("Тотарен")
+        .avatar("me.png")
+        .rating(100500)
+        .respect(9000)
+        .lastVisit(Date())
+        .isOnline(true)
+        .build()*/
 }

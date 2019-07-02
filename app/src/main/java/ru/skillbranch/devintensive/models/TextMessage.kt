@@ -12,5 +12,5 @@ class TextMessage(
     var text: String?
 ) : BaseMessage(id,from, chat, isIncoming, date) {
     override fun formatMessage(): String = "id:$id ${from?.firstName} " +
-            "${if(isIncoming) "got" else "sent"} message \"$text\" ${date}"
+            "${if(isIncoming) "получил" else "отправил"} сообщение \"$text\" ${date}"
 }
