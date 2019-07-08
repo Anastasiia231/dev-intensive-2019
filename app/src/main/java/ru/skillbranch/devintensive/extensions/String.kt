@@ -5,7 +5,7 @@ fun String.truncate(count: Int = 16): String {
     return if (this.trim().length <= count + 1)
     this.trim() + "..."
     else
-        this.trim().substring(0, count + 1).trim() + "..."
+        this.trim().substring(0, count ).trim() + "..."
 
 }
 
