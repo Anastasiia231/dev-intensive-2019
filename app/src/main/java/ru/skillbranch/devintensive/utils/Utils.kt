@@ -165,7 +165,7 @@ object Utils {
     fun toInitials(firstName: String?, lastName: String?): String? {
         var strf = firstName
         var strl = lastName
-        return (if (firstName.isNullOrEmpty() && lastName.isNullOrEmpty()) null
+        return ( if (firstName?.trim().isNullOrEmpty() && lastName?.trim().isNullOrEmpty()) null
         else if (firstName.isNullOrEmpty()) strl!![0].toString().toUpperCase()
         else if (lastName.isNullOrEmpty()) strf!![0].toString().toUpperCase()
         else
