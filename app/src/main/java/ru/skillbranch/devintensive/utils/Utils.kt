@@ -166,10 +166,17 @@ object Utils {
         var strf = firstName
         var strl = lastName
         return (if (firstName.isNullOrEmpty() && lastName.isNullOrEmpty()) null
-        else if (firstName.isNullOrEmpty()) strl!![0].toString()
-        else if (lastName.isNullOrEmpty()) strf!![0].toString()
+        else if (firstName.isNullOrEmpty()) strl!![0].toString().toUpperCase()
+        else if (lastName.isNullOrEmpty()) strf!![0].toString().toUpperCase()
         else
-            strf!![0].toString() + strl!![0].toString())
+            strf!![0].toString().toUpperCase() + strl!![0].toString().toUpperCase())
+        /*val first = firstName?.trimStart()?.firstOrNull()
+        val second = lastName?.trimStart()?.firstOrNull()
+
+        return listOfNotNull(first, second)
+            .joinToString("")
+            .toUpperCase()
+            .takeIf { it.isNotEmpty() }*/
 
     }
     fun getPluralForm(pluralForms: String, count: Int): String {
