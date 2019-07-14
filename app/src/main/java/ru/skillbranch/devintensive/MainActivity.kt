@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val question = savedInstanceState?.getString("QUESTION")?:Bender.Question.NAME.name
         benderObj = Bender(Bender.Status.valueOf(status),Bender.Question.valueOf(question))
 
-        Log.d("M_MainActivity", "onCreate")
+        Log.d("M_MainActivity", "onCreate $status $question")
 
         val (r, g, b) = benderObj.status.color
         benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
