@@ -31,12 +31,14 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = NAME) 
         DANGER(Triple(255, 60, 60)),
         CRITICAL(Triple(255, 0, 0));
 
-        fun nextStatus() =
-            if (ordinal < values().lastIndex) {
-                values()[ordinal + 1]
+        fun nextStatus(): Status {
+            return if (this.ordinal < values().lastIndex) {
+                values()[this.ordinal + 1]
+
             } else {
                 values()[0]
             }
+        }
     }
 
     enum class Question(val question: String, val answers: List<String>) {
