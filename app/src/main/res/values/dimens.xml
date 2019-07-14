@@ -12,7 +12,7 @@
     <dimen name="spacing_small_8">8dp</dimen>
     <dimen name="spacing_tiny_4">4dp</dimen>
 
-    <dimen name="bottom_size_24">24dp</dimen>
+    <dimen name="button_size_24">24dp</dimen>
 
 
 </resources>
