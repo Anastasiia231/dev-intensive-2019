@@ -81,7 +81,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = NAME) 
             override fun nextQuestion() = IDLE
             override fun validate(answer: String): String? = ""
         };
-        // typical 
+        // typical
         abstract fun nextQuestion(): Question
         abstract fun validate(answer: String): String?
     }
