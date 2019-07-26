@@ -13,7 +13,7 @@ class App : Application () {
 
         fun applicationContext(): Context {
             return instance!!.applicationContext
-            
+
         }
     }
 
