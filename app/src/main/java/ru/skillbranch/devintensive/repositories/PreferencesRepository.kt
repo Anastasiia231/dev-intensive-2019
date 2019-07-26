@@ -28,8 +28,8 @@ putValue(APP_THEME to theme)
     fun getAppTheme():Int= prefs.getInt(APP_THEME,AppCompatDelegate.MODE_NIGHT_NO)
     fun saveProfile(profile: Profile){
 with(profile){
-    putValue(FIRST_NAME to firstname)
-    putValue(LAST_NAME to lastname)
+    putValue(FIRST_NAME to firstName)
+    putValue(LAST_NAME to lastName)
     putValue(ABOUT to about)
     putValue(REPOSITORY to repository)
     putValue(RATING to rating)
