@@ -142,8 +142,9 @@
                 android:layout_toRightOf="@id/ic_avatar"
                 android:layout_marginLeft="@dimen/spacing_normal_16">
 
-            <EditText style="@style/Profile.EditText.Single"
+            <EditText
                       android:id="@+id/et_first_time"
+                      style="@style/Profile.EditText.Single"
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:hint="@string/profile_hint_first_name"
@@ -162,8 +163,9 @@
                 android:layout_marginLeft="@dimen/spacing_normal_16"
                 android:layout_below="@id/wr_first_name">
 
-            <EditText style="@style/Profile.EditText.Single"
+            <EditText
                       android:id="@+id/et_last_time"
+                      style="@style/Profile.EditText.Single"
                       android:layout_width="match_parent"
                       android:layout_height="76dp"
                       android:hint="@string/profile_hint_last_name"
