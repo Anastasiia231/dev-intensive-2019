@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -15,7 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
+import ru.skillbranch.devintensive.extensions.validUrl
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
 
@@ -36,7 +38,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
         initViews(savedInstanceState)
         initViewModel()
-        Log.d("M_ProfileActivity", "onCreate")
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -49,11 +50,10 @@ class ProfileActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         viewModel.getProfileData().observe(this, Observer{updateUI(it)})
         viewModel.getTheme().observe(this, Observer{updateTheme(it)})
-        //viewModel.getTextInitials().observe(this, Observer { iv_avatar.setImageDrawable(it) })
+       // viewModel.getTextInitials().observe(this, Observer { iv_avatar.setImageDrawable(it) })
     }
 
     private fun updateTheme(mode: Int) {
-        Log.d("M_ProfileActivity", "updateTheme")
         delegate.setLocalNightMode(mode)
     }
 
@@ -62,9 +62,9 @@ class ProfileActivity : AppCompatActivity() {
             for ((k, v) in viewFields) {
                 v.text = it[k].toString()
             }
+            viewModel.updateTextInitials(getAccentColor())
             btn_switch_theme.setOnClickListener{
                 viewModel.switchTheme()
-                //viewModel.updateTextInitials()
             }
         }
     }
@@ -85,9 +85,9 @@ class ProfileActivity : AppCompatActivity() {
         isValidRepo = savedInstanceState?.getBoolean(IS_VALID_REPO, false) ?: false
         showCurrentMode(isEditMode)
 
-        /*et_repository.addTextChangedListener(object: TextWatcher {
+        et_repository.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString()) {
+                if (s.toString().validUrl()) {
                     isValidRepo = true
                     wr_repository.error = null
                     wr_repository.isErrorEnabled = false
@@ -98,7 +98,7 @@ class ProfileActivity : AppCompatActivity() {
             }
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        })*/
+        })
 
 
         btn_edit.setOnClickListener {
@@ -106,7 +106,6 @@ class ProfileActivity : AppCompatActivity() {
                 if(isEditMode) saveProfileInfo()
                 isEditMode = !isEditMode
                 showCurrentMode(isEditMode)
-                //viewModel.updateTextInitials()
             }
         }
 
@@ -128,17 +127,8 @@ class ProfileActivity : AppCompatActivity() {
         with(btn_edit) {
             val filter: ColorFilter? = if(isEdit) {
 
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
-                    PorterDuffColorFilter(
-                        resources.getColor(R.color.color_accent, theme),
-                        PorterDuff.Mode.SRC_IN
-                    )
-                } else{
-                    PorterDuffColorFilter(
-                        resources.getColor(R.color.color_accent),
-                        PorterDuff.Mode.SRC_IN
-                    )
-                }
+                PorterDuffColorFilter(getAccentColor(), PorterDuff.Mode.SRC_IN)
+
             } else {
                 null
             }
@@ -163,5 +153,11 @@ class ProfileActivity : AppCompatActivity() {
         ).apply {
             viewModel.saveProfileData(this)
         }
+    }
+
+    private fun getAccentColor(): Int {
+        val tv = TypedValue()
+        theme.resolveAttribute(R.attr.colorAccent, tv, true)
+        return tv.data
     }
 }

@@ -1,18 +1,37 @@
 package ru.skillbranch.devintensive.extensions
 
-fun String.truncate(count: Int = 16): String {
-
-    return if (this.trim().length <= count + 1)
-    this.trim() + "..."
-    else
-        this.trim().substring(0, count ).trim() + "..."
-
+fun String.truncate(index: Int = 16) :String {
+    val str = this.trim()
+    return if(str.length < index + 1) str else str.substring(0, index).trim () + "..."
 }
 
 fun String.stripHtml(): String {
+    var str = this
+    str = str.replace(Regex("<.*?>"), "")
+    str = str.replace(Regex("&.*?;"), "")
+    str = str.replace(Regex("\\s+"), " ")
+    return str
+}
 
-    return this.replace(Regex("<[^<]*?>|&#\\d+;|&amp;|&lt;|&gt;|&quot;"), "")
+fun String.validUrl(): Boolean {
 
-        .replace(Regex("[^\\S\\r\\n]+"), " ")
+    val exceptions = arrayOf(
+        "enterprise",
+        "features",
+        "topics",
+        "collections",
+        "trending",
+        "events",
+        "marketplace",
+        "pricing",
+        "nonprofit",
+        "customer-stories",
+        "security",
+        "login",
+        "join"
+    ).joinToString( "|\\b", "\\b" )
 
+    val regex = Regex("^(?:https://)?(?:www.)?(?:github.com/)[^/|\\s]+((?:$exceptions)|(?<!$exceptions))(?:/)?$")
+
+    return (this.isBlank() || regex.matches(this))
 }
