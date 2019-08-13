@@ -39,5 +39,4 @@ fun Activity.isKeyboardOpen(): Boolean
 }
 
 
-
 fun Activity.isKeyboardClosed(): Boolean  = !this.isKeyboardOpen()
