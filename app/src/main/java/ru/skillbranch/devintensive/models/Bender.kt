@@ -7,22 +7,15 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = NAME) 
     fun askQuestion() = question.question
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        val validError = question.validate(answer)
-        if (validError != null) {
-            return (validError + question.question) to status.color
-        }
-        if (question.answers.contains(answer.toLowerCase())) {
+
+        return if (question.answers.contains(answer)) {
             question = question.nextQuestion()
-            return "Отлично - ты справился\n${question.question}" to status.color
-        }
-        status = status.nextStatus()
-        val result = if (status.ordinal != 0) {
-            "Это неправильный ответ\n" + question.question
+            "Отлично - ты справился\n${question.question}" to status.color
         } else {
-            question = NAME
-            "Это неправильный ответ. Давай все по новой\n" + question.question
+            status = status.nextStatus()
+            "Это неправильный ответ\n${question.question}" to status.color
         }
-        return result to status.color
+
     }
 
     enum class Status(val color: Triple<Int, Int, Int>) {
