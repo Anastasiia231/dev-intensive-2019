@@ -1,36 +1,43 @@
 package ru.skillbranch.devintensive.ui.profile
 
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.app.ActionBar
+import android.graphics.*
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.extensions.validUrl
+import ru.skillbranch.devintensive.extensions.hideKeyboard
+import ru.skillbranch.devintensive.models.Bender
 import ru.skillbranch.devintensive.models.Profile
 import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
+import java.lang.IllegalStateException
 
-
-class ProfileActivity : AppCompatActivity() {
-    companion object {
+class ProfileActivity : AppCompatActivity()
+{
+    companion object
+    {
         const val IS_EDIT_MODE = "IS_EDIT_MODE"
-        const val IS_VALID_REPO = "IS_VALID_REPO"
     }
 
     private lateinit var viewModel: ProfileViewModel
     var isEditMode = false
-    var isValidRepo = true
-    lateinit var viewFields : Map<String, TextView>
+    var isAvatarSet = true
+    lateinit var viewFields: Map<String, TextView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -38,82 +45,90 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
         initViews(savedInstanceState)
         initViewModel()
+        Log.d("M_MainActivity", "onCreate")
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onStart() {
+        super.onStart()
+        Log.d("M_MainActivity", "onStart")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("M_MainActivity", "onRestart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("M_MainActivity", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("M_MainActivity", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("M_MainActivity", "onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("M_MainActivity", "onDestroy")
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle)
+    {
         super.onSaveInstanceState(outState)
-        outState?.putBoolean(IS_EDIT_MODE, isEditMode)
-        outState?.putBoolean(IS_VALID_REPO, isValidRepo)
+        outState.putBoolean(IS_EDIT_MODE, isEditMode)
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        viewModel.getProfileData().observe(this, Observer{updateUI(it)})
-        viewModel.getTheme().observe(this, Observer{updateTheme(it)})
-       // viewModel.getTextInitials().observe(this, Observer { iv_avatar.setImageDrawable(it) })
-    }
-
-    private fun updateTheme(mode: Int) {
-        delegate.setLocalNightMode(mode)
-    }
-
-    private fun updateUI(profile: Profile) {
-        profile.toMap().also {
-            for ((k, v) in viewFields) {
-                v.text = it[k].toString()
-            }
-            viewModel.updateTextInitials(getAccentColor())
-            btn_switch_theme.setOnClickListener{
-                viewModel.switchTheme()
-            }
-        }
-    }
-
-    private fun initViews(savedInstanceState: Bundle?) {
+    private fun initViews(savedInstanceState: Bundle?)
+    {
         viewFields = mapOf(
             "nickName" to tv_nick_name,
             "rank" to tv_rank,
+            "rating" to tv_rating,
+            "respect" to tv_respect,
             "firstName" to et_first_name,
             "lastName" to et_last_name,
             "about" to et_about,
-            "repository" to et_repository,
-            "rating" to tv_rating,
-            "respect" to tv_respect
+            "repository" to et_repository
         )
 
-        isEditMode = savedInstanceState?.getBoolean(IS_EDIT_MODE, false) ?: false
-        isValidRepo = savedInstanceState?.getBoolean(IS_VALID_REPO, false) ?: false
+        isEditMode = savedInstanceState?.getBoolean(IS_EDIT_MODE,false) ?: false
         showCurrentMode(isEditMode)
 
-        et_repository.addTextChangedListener(object: TextWatcher {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString().validUrl()) {
-                    isValidRepo = true
-                    wr_repository.error = null
-                    wr_repository.isErrorEnabled = false
-                } else {
-                    isValidRepo = false
-                    wr_repository.error = "Невалидный адрес репозитория"
-                }
-            }
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        })
+        btn_edit.setOnClickListener{
+            viewModel.onRepoEditCompleted(wr_repository.isErrorEnabled)
 
+            if(isEditMode) saveProfileInfo()
+            isEditMode = !isEditMode
+            showCurrentMode(isEditMode)
 
-        btn_edit.setOnClickListener {
-            if(isValidRepo) {
-                if(isEditMode) saveProfileInfo()
-                isEditMode = !isEditMode
-                showCurrentMode(isEditMode)
-            }
         }
 
+        btn_switch_theme.setOnClickListener{
+            viewModel.switchTheme()
+        }
+
+        et_repository.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(p0: Editable?)
+            {
+                viewModel.onRepositoryChanged(p0.toString())
+            }
+        })
     }
 
-    private fun showCurrentMode(isEdit: Boolean) {
-        val info = viewFields.filter { setOf("firstName", "lastName", "about", "repository").contains(it.key) }
-        for((_, v) in info) {
+    private fun showCurrentMode(isEdit: Boolean)
+    {
+        val info = viewFields.filter { setOf("firstName","lastName","about","repository").contains(it.key) }
+        for((_,v) in info)
+        {
             v as EditText
             v.isFocusable = isEdit
             v.isFocusableInTouchMode = isEdit
@@ -121,30 +136,103 @@ class ProfileActivity : AppCompatActivity() {
             v.background.alpha = if(isEdit) 255 else 0
         }
 
-        ic_eye.visibility = if(isEdit) View.GONE else View.VISIBLE
         wr_about.isCounterEnabled = isEdit
+        ic_eye.visibility = if(isEdit) View.GONE else View.VISIBLE
 
-        with(btn_edit) {
-            val filter: ColorFilter? = if(isEdit) {
+        with(btn_edit)
+        {
+            val filter: ColorFilter? = if(isEdit)
+            {
+                PorterDuffColorFilter(resources.getColor(R.color.color_accent, theme), PorterDuff.Mode.SRC_IN)
+            } else null
 
-                PorterDuffColorFilter(getAccentColor(), PorterDuff.Mode.SRC_IN)
-
-            } else {
-                null
-            }
-
-            val icon = if(isEdit) {
+            val icon = if(isEdit)
+            {
                 resources.getDrawable(R.drawable.ic_save_black_24dp, theme)
-            } else {
+            }
+            else
+            {
                 resources.getDrawable(R.drawable.ic_edit_black_24dp, theme)
             }
 
             background.colorFilter = filter
             setImageDrawable(icon)
         }
+
     }
 
-    private fun saveProfileInfo() {
+    private fun initViewModel()
+    {
+        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        viewModel.getProfileData().observe(this, Observer { updateUI(it) })
+        viewModel.getTheme().observe(this, Observer { updateTheme(it) })
+        viewModel.getRepositoryError().observe(this, Observer { updateRepoError(it) })
+        viewModel.getIsRepoError().observe(this, Observer { updateRepository(it) })
+    }
+
+    private fun updateRepository(isError: Boolean) {
+        if (isError) et_repository.text.clear()
+    }
+
+    private fun updateRepoError(isError: Boolean) {
+        wr_repository.isErrorEnabled = isError
+        wr_repository.error = if (isError) "Невалидный адрес репозитория" else null
+    }
+
+    private fun updateTheme(mode: Int) {
+        delegate.setLocalNightMode(mode)
+        Log.d("M_ProfileActivity", "updatedTheme")
+    }
+
+    private fun updateUI(profile: Profile)
+    {
+        profile.toMap().also{
+            for((k,v) in viewFields)
+            {
+                v.text = it[k].toString()
+            }
+        }
+        if(!isAvatarSet)
+            updateDefaultAvatar(profile)
+    }
+
+    private fun updateDefaultAvatar(profile: Profile)
+    {
+        Utils.toInitials(profile.firstName, profile.lastName)?.let {
+            val avatar = getTextAvatar(it)
+            iv_avatar.setImageBitmap(avatar)
+        } ?: iv_avatar.setImageResource(R.drawable.avatar_default)
+
+    }
+
+    private fun getTextAvatar(text: String): Bitmap
+    {
+        val color = TypedValue()
+        theme.resolveAttribute(R.attr.colorAccent, color,true)
+
+        var bitmap: Bitmap = Bitmap.createBitmap(ic_avatar.layoutParams.width,ic_avatar.layoutParams.height,
+            Bitmap.Config.ARGB_8888)
+
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.textSize = 38f
+        paint.color = Color.WHITE
+        paint.textAlign = Paint.Align.CENTER
+
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(color.data)
+
+        val textBounds = Rect()
+        paint.getTextBounds(text,0,text.length,textBounds)
+
+        canvas.drawText(text,ic_avatar.layoutParams.width/2f,
+            ic_avatar.layoutParams.height/2f + textBounds.height()/2f, paint)
+
+
+        return bitmap
+    }
+
+    private fun saveProfileInfo()
+    {
         Profile(
             firstName = et_first_name.text.toString(),
             lastName = et_last_name.text.toString(),
@@ -155,9 +243,6 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun getAccentColor(): Int {
-        val tv = TypedValue()
-        theme.resolveAttribute(R.attr.colorAccent, tv, true)
-        return tv.data
-    }
+
+
 }
