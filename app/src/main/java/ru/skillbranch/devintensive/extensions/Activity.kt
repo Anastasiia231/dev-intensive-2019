@@ -38,4 +38,6 @@ fun Activity.isKeyboardOpen(): Boolean
     return heightDiff > marginOfError
 }
 
+
+
 fun Activity.isKeyboardClosed(): Boolean  = !this.isKeyboardOpen()
